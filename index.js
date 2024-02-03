@@ -1,54 +1,50 @@
-
-const inquirer = require('inquirer');
+const readlineSync = require('readline-sync');
 const fs = require('fs');
+const path = require('path');
 const { Circle, Square, Triangle } = require('./lib/shapes');
 
-async function generateLogo() {
-  const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'text',
-      message: 'Enter up to three characters for the logo:',
-      validate: input => input.length <= 3 ? true : 'Logo text must be up to three characters.'
-    },
-    {
-      type: 'input',
-      name: 'textColor',
-      message: 'Enter the text color:',
-    },
-    {
-      type: 'list',
-      name: 'shape',
-      message: 'Choose the shape of the logo:',
-      choices: ['Circle', 'Square', 'Triangle'],
-    },
-    {
-      type: 'input',
-      name: 'shapeColor',
-      message: 'Enter the color for the shape:',
-    }
-  ]);
+// Define a function to generate and save SVG files
+const generateSVG = () => {
+  // Using readline-sync to collect user input (text, colors, shape)
+  const userInput = {
+    text: readlineSync.question('Enter text for the logo (up to three characters): '),
+    textColor: readlineSync.question('Enter text color (keyword or hexadecimal): '),
+    shape: readlineSync.question('Choose a shape for the logo (Circle/Square/Triangle): '),
+    shapeColor: readlineSync.question('Enter shape color (keyword or hexadecimal): '),
+  };
 
-  let shapeSvg;
-  switch (answers.shape) {
-    case 'Circle':
-      shapeSvg = new Circle(answers.shapeColor).render();
+  // Create an instance of the selected shape
+  let shape;
+  switch (userInput.shape.toLowerCase()) {
+    case 'circle':
+      shape = new Circle(userInput.shapeColor);
       break;
-    case 'Square':
-      shapeSvg = new Square(answers.shapeColor).render();
+    case 'square':
+      shape = new Square(userInput.shapeColor);
       break;
-    case 'Triangle':
-      shapeSvg = new Triangle(answers.shapeColor).render();
+    case 'triangle':
+      shape = new Triangle(userInput.shapeColor);
       break;
+    default:
+      console.log('Invalid shape choice');
+      return;
   }
 
-  const svgContent = `<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
-    ${shapeSvg}
-    <text x="150" y="100" font-size="20" text-anchor="middle" fill="${answers.textColor}">${answers.text}</text>
-  </svg>`;
+  // Set text and text color
+  shape.setText(userInput.text);
+  shape.setTextColor(userInput.textColor);
 
-  fs.writeFileSync('logo.svg', svgContent);
-  console.log('Generated logo.svg');
-}
+  // Generate SVG markup
+  const svgMarkup = shape.render();
 
-generateLogo();
+  // Specify the path to save the SVG file (in the examples directory)
+  const filePath = path.join(__dirname, 'examples', 'logo.svg');
+
+  // Save the SVG markup to the file
+  fs.writeFileSync(filePath, svgMarkup);
+
+  console.log('Generated logo.svg in the examples directory');
+};
+
+// Call the generateSVG function to start the generation process
+generateSVG();
