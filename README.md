@@ -13,15 +13,15 @@ Generate SVG markup for your logo.
 ## Installation
 
 Clone this repository to your local machine.
-bash
+
 Copy code
 git clone https://github.com/your-username/svg-logo-maker.git
 Navigate to the project directory.
-bash
+
 Copy code
 cd svg-logo-maker
 Install the required dependencies.
-bash
+
 Copy code
 npm install
 
@@ -31,7 +31,7 @@ npm install
 ## Usage
 
 Run the SVG Logo Maker.
-bash
+
 Copy code
 node index.js
 Follow the prompts to customize your logo.
